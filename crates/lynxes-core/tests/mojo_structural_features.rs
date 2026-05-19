@@ -45,10 +45,10 @@ fn mojo_structural_features_compute_all_edge_degrees() {
         .unwrap();
 
     assert_eq!(features.id_column().value(0), "alice");
-    assert_eq!(features.id_column().value(4), "acme");
-    assert_eq!(out_degree.values(), &[2, 1, 0, 1, 0]);
-    assert_eq!(in_degree.values(), &[1, 1, 2, 0, 1]);
-    assert_eq!(total_degree.values(), &[3, 2, 2, 1, 1]);
+    assert_eq!(features.id_column().value(3), "diana");
+    assert_eq!(out_degree.values(), &[2, 1, 0, 1]);
+    assert_eq!(in_degree.values(), &[1, 1, 2, 0]);
+    assert_eq!(total_degree.values(), &[3, 2, 2, 1]);
 }
 
 #[test]
@@ -70,6 +70,6 @@ fn mojo_structural_features_respect_edge_type_filter() {
         .downcast_ref::<Int64Array>()
         .unwrap();
 
-    assert_eq!(out_degree.values(), &[1, 1, 0, 0, 0]);
-    assert_eq!(in_degree.values(), &[0, 1, 1, 0, 0]);
+    assert_eq!(out_degree.values(), &[1, 1, 0, 0]);
+    assert_eq!(in_degree.values(), &[0, 1, 1, 0]);
 }
