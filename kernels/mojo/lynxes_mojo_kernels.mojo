@@ -4,15 +4,15 @@ from std.memory import UnsafePointer
 @export("lynxes_structural_degrees_i64", ABI="C")
 fn lynxes_structural_degrees_i64(
     node_count: Int,
-    node_to_edge_idx: UnsafePointer[mut=False, Int64],
-    out_offsets: UnsafePointer[mut=False, UInt32],
-    out_edge_ids: UnsafePointer[mut=False, UInt32],
-    in_offsets: UnsafePointer[mut=False, UInt32],
-    in_edge_ids: UnsafePointer[mut=False, UInt32],
-    edge_allowed: UnsafePointer[mut=False, UInt8],
-    out_degree: UnsafePointer[mut=True, Int64],
-    in_degree: UnsafePointer[mut=True, Int64],
-    total_degree: UnsafePointer[mut=True, Int64],
+    node_to_edge_idx: UnsafePointer[mut=False, Int64, _],
+    out_offsets: UnsafePointer[mut=False, UInt32, _],
+    out_edge_ids: UnsafePointer[mut=False, UInt32, _],
+    in_offsets: UnsafePointer[mut=False, UInt32, _],
+    in_edge_ids: UnsafePointer[mut=False, UInt32, _],
+    edge_allowed: UnsafePointer[mut=False, UInt8, _],
+    out_degree: UnsafePointer[mut=True, Int64, _],
+    in_degree: UnsafePointer[mut=True, Int64, _],
+    total_degree: UnsafePointer[mut=True, Int64, _],
 ) -> Int32:
     for row in range(node_count):
         let edge_idx_i64 = node_to_edge_idx[row]
