@@ -1,0 +1,52 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local working memory / tool config
+AGENTS.md
+Brain.md
+CLAUDE.md
+DESIGN.md
+GEMINI.md
+simsim.gf
+simsim.py
+DOCS_EXAMPLES_TESTS_PLAN.md
+.claude
+docs/spec
+.claude/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Native extension build artifacts
+*.pyd
+*.pdb
+*.so
+*.dylib
+
+# Rust build outputs
+target/
+target-*/
+
+# wasm-pack output
+pkg/
+www/pkg/
+
+# Python virtualenv / test cache
+.venv/
+.pytest_cache/
+
+# Local scratch
+*.bak
+after.md
+design_proposal_gnn_kg.md
+docs/gf_authoring_guide_ko.md
+Doc_refactoring

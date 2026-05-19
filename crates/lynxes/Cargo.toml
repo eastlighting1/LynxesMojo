@@ -1,0 +1,18 @@
+[package]
+name = "lynxes"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Graph-native analytics engine built on Apache Arrow — public umbrella crate"
+
+[lib]
+bench = false
+
+[dependencies]
+lynxes-core = { path = "../lynxes-core" }
+lynxes-plan = { path = "../lynxes-plan" }
+lynxes-io = { path = "../lynxes-io" }
+lynxes-connect = { path = "../lynxes-connect" }
+lynxes-lazy = { path = "../lynxes-lazy" }

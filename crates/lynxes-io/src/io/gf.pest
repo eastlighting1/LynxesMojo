@@ -1,0 +1,126 @@
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+
+file = { bom? ~ top_item* ~ EOI }
+top_item = _{
+    meta_block
+    | namespace_block
+    | import_stmt
+    | node_schema
+    | edge_schema
+    | node_decl
+    | edge_decl
+    | comment
+}
+
+bom = { "\u{FEFF}" }
+comment = _{ "#" ~ (!newline ~ ANY)* ~ newline? }
+newline = _{ "\r\n" | "\n" }
+
+meta_block = { "@meta" ~ object }
+namespace_block = { "@namespace" ~ object }
+import_stmt = { "@import" ~ string }
+
+node_schema = { "node" ~ label ~ extends_clause? ~ "{" ~ field_def* ~ "}" }
+edge_schema = { "edge" ~ edge_type ~ "{" ~ field_def* ~ "}" }
+extends_clause = { "extends" ~ label }
+
+field_def = { ident ~ ":" ~ type_expr ~ directive* }
+directive = _{ unique_directive | index_directive | default_directive }
+unique_directive = { "@unique" }
+index_directive = { "@index" }
+default_directive = { "@default" ~ "(" ~ value ~ ")" }
+
+type_expr = {
+    list_type_optional
+    | list_type
+    | list_bare_optional
+    | list_bare
+    | optional_scalar_type
+    | base_type
+}
+optional_scalar_type = { base_type ~ "?" }
+list_type_optional = { "List" ~ "<" ~ type_expr_non_optional ~ ">" ~ "?" }
+list_type = { "List" ~ "<" ~ type_expr_non_optional ~ ">" }
+list_bare_optional = { "List" ~ "?" }
+list_bare = { "List" }
+type_expr_non_optional = { list_type | base_type }
+
+base_type = {
+    "String"
+    | "Int"
+    | "Float"
+    | "Bool"
+    | "DateTime"
+    | "Date"
+    | "Duration"
+    | "Any"
+}
+
+node_decl = { "(" ~ node_id ~ node_label_clause? ~ props? ~ ")" }
+node_label_clause = { ":" ~ label_list }
+label_list = { label ~ ("|" ~ label)* }
+
+edge_decl = { node_ref ~ edge_body ~ node_ref ~ props? }
+edge_body = _{ bi_edge | in_edge | out_edge | undirected_edge }
+out_edge = { "-[" ~ edge_type ~ "]->" }
+in_edge = { "<-[" ~ edge_type ~ "]-" }
+bi_edge = { "<-[" ~ edge_type ~ "]->" }
+undirected_edge = { "--[" ~ edge_type ~ "]--" }
+
+props = { object }
+object = { "{" ~ pair_list? ~ "}" }
+pair_list = { pair ~ ("," ~ pair)* ~ ","? }
+pair = { ident ~ ":" ~ value }
+
+value = _{
+    string
+    | datetime
+    | date
+    | float
+    | integer
+    | boolean
+    | null
+    | list
+    | object
+}
+
+list = { "[" ~ value_list? ~ "]" }
+value_list = { value ~ ("," ~ value)* ~ ","? }
+
+boolean = { "true" | "false" }
+null = { "null" }
+
+node_id = @{ ident }
+node_ref = @{ ident }
+label = @{ ident }
+edge_type = @{ ident }
+ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+
+string = ${ "\"" ~ string_inner* ~ "\"" }
+string_inner = _{ escape | !("\"" | "\\") ~ ANY }
+escape = _{ "\\\"" | "\\\\" | "\\n" | "\\r" | "\\t" | unicode_escape }
+unicode_escape = _{ "\\u" ~ ASCII_HEX_DIGIT ~ ASCII_HEX_DIGIT ~ ASCII_HEX_DIGIT ~ ASCII_HEX_DIGIT }
+
+integer = @{ "-"? ~ ASCII_DIGIT+ }
+float = @{
+    "-"? ~ (
+        ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT+ ~ exponent?
+        | ASCII_DIGIT+ ~ exponent
+    )
+}
+exponent = { ("e" | "E") ~ ("+" | "-")? ~ ASCII_DIGIT+ }
+
+datetime = @{
+    ASCII_DIGIT ~ ASCII_DIGIT ~ ASCII_DIGIT ~ ASCII_DIGIT ~ "-" ~
+    ASCII_DIGIT ~ ASCII_DIGIT ~ "-" ~
+    ASCII_DIGIT ~ ASCII_DIGIT ~ "T" ~
+    ASCII_DIGIT ~ ASCII_DIGIT ~ ":" ~
+    ASCII_DIGIT ~ ASCII_DIGIT ~ ":" ~
+    ASCII_DIGIT ~ ASCII_DIGIT
+}
+
+date = @{
+    ASCII_DIGIT ~ ASCII_DIGIT ~ ASCII_DIGIT ~ ASCII_DIGIT ~ "-" ~
+    ASCII_DIGIT ~ ASCII_DIGIT ~ "-" ~
+    ASCII_DIGIT ~ ASCII_DIGIT
+}

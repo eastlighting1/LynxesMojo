@@ -1,0 +1,17 @@
+[package]
+name = "lynxes-plan"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+bench = false
+
+[dependencies]
+arrow-schema = { workspace = true }
+hashbrown = { workspace = true }
+lynxes-core = { path = "../lynxes-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }

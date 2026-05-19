@@ -1,0 +1,154 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Only run when engine code changes — skip doc/config-only commits
+      - "crates/**/*.rs"
+      - "py-lynxes/tests/benchmark/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+  workflow_dispatch:
+    inputs:
+      save-baseline:
+        description: "Save results as new baseline (true/false)"
+        required: false
+        default: "false"
+
+env:
+  CARGO_TERM_COLOR: always
+  LYNXES_FULL_BENCH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+
+jobs:
+  # ── Rust criterion benchmarks ─────────────────────────────────────────────────
+  rust-bench:
+    name: Rust benchmarks (criterion)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run criterion benchmarks
+        run: |
+          cargo bench \
+            -p lynxes-core \
+            --benches \
+            -- --output-format bencher | tee rust-bench-output.txt
+
+      - name: Upload criterion HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: criterion-report
+          path: target/criterion/
+          retention-days: 30
+
+      - name: Upload raw bench output
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-bench-output
+          path: rust-bench-output.txt
+
+  # ── Python benchmarks: lynxes vs NetworkX vs igraph ──────────────────────────
+  python-bench:
+    name: Python benchmarks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        size: [1000, 10000]   # 100k is too slow for CI; run locally
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "crates/lynxes-python -> target"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies + build extension
+        working-directory: py-lynxes
+        run: |
+          uv sync --group dev --group benchmark
+          uv run maturin develop --release
+
+      - name: Run NetworkX benchmark (n=${{ matrix.size }})
+        working-directory: py-lynxes
+        run: |
+          uv run python tests/benchmark/bench_vs_networkx.py \
+            --sizes ${{ matrix.size }} \
+            --reps 1 \
+            --output ../bench-networkx-${{ matrix.size }}.md
+        continue-on-error: true  # Don't fail CI if benchmark script exits non-zero
+
+      - name: Run igraph benchmark (n=${{ matrix.size }})
+        working-directory: py-lynxes
+        run: |
+          uv run python tests/benchmark/bench_vs_igraph.py \
+            --sizes ${{ matrix.size }} \
+            --reps 1 \
+            --output ../bench-igraph-${{ matrix.size }}.md
+        continue-on-error: true
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-bench-${{ matrix.size }}
+          path: bench-*.md
+          retention-days: 30
+
+  # ── Post benchmark summary as PR comment (on workflow_dispatch only) ──────────
+  post-summary:
+    name: Post benchmark summary
+    needs: [rust-bench, python-bench]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Download all benchmark artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*bench*"
+          merge-multiple: true
+          path: bench-results/
+
+      - name: Build summary
+        run: |
+          echo "## Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if ls bench-results/*.md 1>/dev/null 2>&1; then
+            for f in bench-results/*.md; do
+              echo "### $(basename $f .md)" >> $GITHUB_STEP_SUMMARY
+              cat "$f" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+            done
+          else
+            echo "No benchmark output files found." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### Rust Criterion" >> $GITHUB_STEP_SUMMARY
+          if [ -f bench-results/rust-bench-output.txt ]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat bench-results/rust-bench-output.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

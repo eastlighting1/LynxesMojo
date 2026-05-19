@@ -1,0 +1,22 @@
+[package]
+name = "lynxes-lazy"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+bench = false
+
+[dependencies]
+arrow = { workspace = true }
+arrow-array = { workspace = true }
+arrow-schema = { workspace = true }
+hashbrown = { workspace = true }
+lynxes-core = { path = "../lynxes-core" }
+lynxes-io = { path = "../lynxes-io" }
+lynxes-plan = { path = "../lynxes-plan" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+rayon = { workspace = true }

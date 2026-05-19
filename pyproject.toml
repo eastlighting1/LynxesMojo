@@ -1,0 +1,62 @@
+[project]
+name = "lynxes-mojo"
+dynamic = ["version"]
+description = "Toy Lynxes prototype with a Linux-only Mojo graph feature kernel"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "LynxesMojo Toy Project" }]
+keywords = ["graph", "arrow", "csr", "mojo", "modular", "toy-project"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pyarrow>=17.0",
+]
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+manifest-path = "crates/lynxes-python/Cargo.toml"
+python-source = "py-lynxes/src"
+module-name = "lynxes._lynxes"
+features = ["pyo3/extension-module"]
+include = [{ path = "py-lynxes/src/lynxes/.libs/liblynxes_mojo_kernels.so", format = "wheel" }]
+
+[tool.pytest.ini_options]
+testpaths = ["py-lynxes/tests/unit"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[dependency-groups]
+dev = [
+    "maturin>=1.13.1",
+    "pytest>=8.0",
+    "ruff>=0.8",
+]
+benchmark = [
+    "igraph>=0.11",
+    "networkx>=3.0",
+    "scipy>=1.15.3",
+]

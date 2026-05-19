@@ -1,0 +1,20 @@
+[package]
+name = "lynxes-python"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+name = "_lynxes"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+arrow = { workspace = true, features = ["pyarrow"] }
+lynxes-connect = { path = "../lynxes-connect" }
+lynxes-core = { path = "../lynxes-core" }
+lynxes-io = { path = "../lynxes-io" }
+lynxes-lazy = { path = "../lynxes-lazy" }
+lynxes-plan = { path = "../lynxes-plan" }
+pyo3 = { workspace = true, features = ["abi3-py310"] }

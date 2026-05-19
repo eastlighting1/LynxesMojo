@@ -1,0 +1,28 @@
+[package]
+name = "lynxes-io"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+bench = false
+
+[dependencies]
+arrow = { workspace = true }
+arrow-array = { workspace = true }
+arrow-ipc = { workspace = true }
+arrow-schema = { workspace = true }
+chrono = { workspace = true }
+futures-core = { workspace = true }
+lynxes-core = { path = "../lynxes-core" }
+pest = { workspace = true }
+pest_derive = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+lz4_flex = { workspace = true }
+parquet = { workspace = true }
+zstd = { workspace = true }

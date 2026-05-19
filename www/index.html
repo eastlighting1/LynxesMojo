@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LynxesMojo GFB Demo</title>
+  <style>
+    :root {
+      --bg: #f5f0e6;
+      --panel: #fffaf2;
+      --ink: #1f1f1f;
+      --accent: #c0542d;
+      --border: #d9cbb3;
+    }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #fff7e9, var(--bg));
+      color: var(--ink);
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 20px 64px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1;
+    }
+    p {
+      max-width: 62ch;
+      line-height: 1.6;
+    }
+    .panel {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(110, 72, 28, 0.08);
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .card {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.8);
+    }
+    .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b5e46;
+    }
+    .value {
+      margin-top: 8px;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    input[type="file"] {
+      margin-top: 16px;
+      color: var(--accent);
+    }
+    pre {
+      overflow: auto;
+      padding: 16px;
+      border-radius: 14px;
+      background: #221d18;
+      color: #fef2d5;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LynxesMojo GFB Demo</h1>
+    <p>
+      A small local page for inspecting <code>.gfb</code> files from this
+      LynxesMojo toy checkout. The Mojo structural feature itself runs through
+      the Linux Python/Rust path, not through this browser demo.
+    </p>
+
+    <section class="panel">
+      <div id="version">Loading wasm module…</div>
+      <input id="file" type="file" accept=".gfb" />
+      <div class="summary" id="summary"></div>
+      <pre id="raw">No file loaded yet.</pre>
+    </section>
+  </main>
+
+  <script type="module" src="./index.js"></script>
+
+</body>
+</html>

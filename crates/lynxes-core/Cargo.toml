@@ -1,0 +1,92 @@
+[package]
+name = "lynxes-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+bench = false
+
+[dependencies]
+# Wasm-safe dependencies (available on all targets)
+arrow = { workspace = true }
+arrow-ipc = { workspace = true }
+arrow-array = { workspace = true }
+arrow-schema = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+base64 = { workspace = true }
+pest = { workspace = true }
+pest_derive = { workspace = true }
+futures-core = { workspace = true }
+futures = { workspace = true }
+ahash = { workspace = true }
+hashbrown = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# Native-only: not available on wasm32 (mio/tokio OS I/O, rayon threads, gRPC)
+arc-swap = "1"
+arrow-flight = { workspace = true }
+rand = { version = "0.8", default-features = false, features = ["std", "std_rng"] }
+tokio = { workspace = true }
+tokio-stream = { workspace = true }
+rayon = { workspace = true }
+tonic = { workspace = true }
+prost = { workspace = true }
+zstd = { workspace = true }
+lz4_flex = { workspace = true }
+parquet = { workspace = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libloading = { workspace = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { workspace = true }
+wasm-bindgen = { workspace = true }
+wasm-bindgen-futures = { workspace = true }
+js-sys = { workspace = true }
+serde-wasm-bindgen = { workspace = true }
+web-sys = { workspace = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+lynxes-connect = { path = "../lynxes-connect" }
+lynxes-io = { path = "../lynxes-io" }
+lynxes-lazy = { path = "../lynxes-lazy" }
+tokio = { workspace = true }
+
+[[bench]]
+name = "csr_vs_linear"
+harness = false
+
+[[bench]]
+name = "parallel_expand"
+harness = false
+
+[[bench]]
+name = "in_csr_build"
+harness = false
+
+[[bench]]
+name = "astar_vs_dijkstra"
+harness = false
+
+[[bench]]
+name = "terminal_projection"
+harness = false
+
+[[bench]]
+name = "mutation_bench"
+harness = false
+
+[[bench]]
+name = "sampling_bench"
+harness = false
+
+[[bench]]
+name = "pattern_match_bench"
+harness = false

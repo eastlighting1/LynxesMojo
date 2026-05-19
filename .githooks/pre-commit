@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+
+if [[ "${LYNXES_SKIP_MOJO_COMMIT_CHECK:-}" == "1" ]]; then
+  echo "Skipping Lynxes Mojo commit check because LYNXES_SKIP_MOJO_COMMIT_CHECK=1"
+  exit 0
+fi
+
+if command -v mojo >/dev/null 2>&1; then
+  bash "$repo_root/scripts/check_mojo_kernels.sh"
+  exit 0
+fi
+
+if command -v wsl.exe >/dev/null 2>&1; then
+  wsl_repo="$(wsl.exe wslpath -a "$repo_root" | tr -d '\r')"
+  wsl.exe bash -lc "cd '$wsl_repo' && bash scripts/check_mojo_kernels.sh"
+  exit 0
+fi
+
+echo "error: cannot verify Lynxes Mojo kernels before commit." >&2
+echo "Install Mojo in this shell, or install WSL with Mojo and retry." >&2
+exit 1

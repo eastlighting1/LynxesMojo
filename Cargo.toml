@@ -1,0 +1,57 @@
+[workspace]
+members = [
+    "crates/lynxes",
+    "crates/lynxes-core",
+    "crates/lynxes-wasm",
+    "crates/lynxes-plan",
+    "crates/lynxes-io",
+    "crates/lynxes-connect",
+    "crates/lynxes-lazy",
+    "crates/lynxes-python",
+    "crates/lynxes-cli",
+]
+resolver = "2"
+
+[workspace.package]
+version = "1.3.12"
+edition = "2021"
+license = "MIT"
+authors = ["Lynxes"]
+repository = "https://github.com/eastlighting1/Lynxes"
+
+[workspace.dependencies]
+arrow = { version = "53", features = ["ipc", "json", "csv"] }
+arrow-flight = "53"
+arrow-ipc = "53"
+arrow-array = "53"
+arrow-schema = "53"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+pest = "2"
+pest_derive = "2"
+tokio = { version = "1", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["net"] }
+futures-core = "0.3"
+futures = "0.3"
+tonic = { version = "0.12", features = ["transport", "tls-roots"] }
+prost = "0.13"
+rayon = "1"
+getrandom = { version = "0.3", features = ["wasm_js"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+serde-wasm-bindgen = "0.6"
+ahash = "0.8"
+hashbrown = "0.14"
+thiserror = "1"
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+pyo3 = { version = "0.22", features = ["extension-module"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+zstd = "0.13"
+lz4_flex = "0.11"
+parquet = { version = "53", features = ["arrow"] }
+indicatif = "0.17"
+web-sys = { version = "0.3", features = ["Window", "Response"] }
+libloading = "0.8"
