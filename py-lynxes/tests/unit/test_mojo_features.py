@@ -8,7 +8,9 @@ import lynxes as lx
 MOJO_LIB = Path(lx.__file__).parent / ".libs" / "liblynxes_mojo_kernels.so"
 
 
-@pytest.mark.skipif(sys.platform != "linux" or not MOJO_LIB.exists(), reason="requires bundled Mojo .so")
+@pytest.mark.skipif(
+    sys.platform != "linux" or not MOJO_LIB.exists(), reason="requires bundled Mojo .so"
+)
 def test_structural_features_computes_degrees_by_edge_type():
     graph = lx.graph(
         nodes={
@@ -32,7 +34,9 @@ def test_structural_features_computes_degrees_by_edge_type():
     assert features.column_values("total_degree") == [2, 2, 2, 0]
 
 
-@pytest.mark.skipif(sys.platform != "linux" or not MOJO_LIB.exists(), reason="requires bundled Mojo .so")
+@pytest.mark.skipif(
+    sys.platform != "linux" or not MOJO_LIB.exists(), reason="requires bundled Mojo .so"
+)
 def test_aggregate_neighbors_count_uses_mojo_degree_kernel():
     graph = lx.graph(
         nodes={
@@ -52,7 +56,9 @@ def test_aggregate_neighbors_count_uses_mojo_degree_kernel():
     assert nodes.column_values("count") == [2, 0, 0]
 
 
-@pytest.mark.skipif(sys.platform == "linux" and MOJO_LIB.exists(), reason="Mojo runtime is available")
+@pytest.mark.skipif(
+    sys.platform == "linux" and MOJO_LIB.exists(), reason="Mojo runtime is available"
+)
 def test_structural_features_requires_mojo_runtime():
     graph = lx.graph(
         nodes={"_id": ["solo"], "_label": [["Person"]]},
